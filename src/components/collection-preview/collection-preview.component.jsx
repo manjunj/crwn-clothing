@@ -6,11 +6,9 @@ const CollectionPreview = ({title, items})=>
     <div className = 'collection-preview'>
         <h1 className="title">{title.toUpperCase()}</h1>
         <div className="preview">
-        {items.filter((ele,index)=>(index<5))
-                .map(item=>
-                <div key={item.id}>{item.name}</div>)}
+        {items.filter((ele,index)=>(index<4))
+                .map(({id, ...info})=>
+                <CollectionItem key={id} {...info} />)}
         </div>
     </div>
-
-
-export default CollectionPreview;
+ export default CollectionPreview;
