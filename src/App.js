@@ -4,8 +4,10 @@ import ShopPage from './pages/shop/shop.component'
 import Header from './components/header/header.component';
 import SignUpSignin from './pages/sign-up-and-sign-in/sign-up-and-sign-in.component';
 import {Route, Routes, BrowserRouter} from 'react-router-dom';
-import {auth} from './firebase/firebase.utils';
+import {auth,createUserProfileDocument} from './firebase/firebase.utils';
 import React from 'react';
+import {Provider} from 'react-redux';
+import store from './redux/store';
 
 class App extends React.Component{
   constructor(){
@@ -17,10 +19,22 @@ class App extends React.Component{
 
   unsubscribeFromAuth = null;
   componentDidMount(){
-    this.state.unsubscribeFromAuth = 
-    auth.onAuthStateChanged(user=>{
-      this.setState({currentUser:user});
-    })
+    this.unsubscribeFromAuth = 
+    auth.onAuthStateChanged(async userAuth=>{
+      if (userAuth){
+        const userRef = await createUserProfileDocument(userAuth);
+        userRef.onSnapshot(snapshot => {
+          this.setState(
+            {
+              currentUser: {
+                id: snapshot.id,
+                ...snapshot.data()
+              }
+            });
+        })
+    }
+    this.setState({currentUser:userAuth});
+  })
   }
 
   componentWillUnmount(){
@@ -30,6 +44,7 @@ class App extends React.Component{
   render(){
     return (
       <div>
+      <Provider store={store}>
         <BrowserRouter>
           <Header currentUser={this.state.currentUser}/>
           <Routes>
@@ -38,6 +53,7 @@ class App extends React.Component{
             <Route path="/signin" element={<SignUpSignin />}/>
           </Routes>
         </BrowserRouter>
+        </Provider>
       </div>
     )
   }
