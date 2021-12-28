@@ -19,7 +19,9 @@
     justify-content: flex-end;
 
     .option {
-      padding: 10px 15px;
+      padding: 10px 25px;
+      font-size: 24px;
+      cursor:pointer;
     }
   }
 }
@@ -27,5 +29,4 @@
 a {
     text-decoration: none;
     color:black;
-    font-size: 24px;
   }
