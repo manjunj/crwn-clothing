@@ -5,12 +5,13 @@ import Header from './components/header/header.component';
 import SignUpSignin from './pages/sign-up-and-sign-in/sign-up-and-sign-in.component';
 import CheckOut from './pages/checkout/checkout.component';
 import {Route, Routes, BrowserRouter,Navigate} from 'react-router-dom';
-import {auth,createUserProfileDocument} from './firebase/firebase.utils';
+import {auth,createUserProfileDocument, addCollectionAndItems} from './firebase/firebase.utils';
 import React from 'react';
 import {connect} from 'react-redux';
 import {createStructuredSelector} from 'reselect';
 import {setCurrentUser} from './redux/user/user.action'
 import { selectCurrentUser } from './redux/user/user.selectors';
+// import { selectShopItems } from './redux/shop/shop.selector'
 
 class App extends React.Component{
 
@@ -30,8 +31,11 @@ class App extends React.Component{
       });
     }
     setCurrentUser(userAuth);
+    // const collection = Object.values(collectionsArray);
+    // addCollectionAndItems('collections',collection.map(({title,items})=>({title,items})))
   })
   }
+
 
   componentWillUnmount(){
     this.unsubscribeFromAuth();
@@ -55,7 +59,7 @@ class App extends React.Component{
 }
 
 const mapStatetoProps=createStructuredSelector({
-  currentUser:selectCurrentUser
+  currentUser:selectCurrentUser,
 });
 
 const mapDispatchtoProps = dispatch =>({

@@ -22,6 +22,8 @@ const config= {
     else{
       const userRef = firestore.doc(`users/${userAuth.uid}`);
       const snapshot = await userRef.get();
+      const collectionRef = firestore.collection('users');
+      const collectionSnapshot = await collectionRef.get();
       if (!snapshot.exists){
         const {displayName, email} = userAuth;
         const createdAt = new Date();
@@ -37,6 +39,39 @@ const config= {
 
   const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({prompt:'select_account'});
+  
+  export const addCollectionAndItems = async (collectionKey, objectsToAdd)=>{
+    const collectionRef = firestore.collection(collectionKey);
+    const batch = firestore.batch();
+    objectsToAdd.forEach(obj => {
+      // console.log(obj)
+      const newDocRef = collectionRef.doc();
+      // console.log(newDocRef);
+      batch.set(newDocRef,obj);
+    })
+    await batch.commit();
+  }
+
+  export const getCollection = (store)=> store.get().then((querySnapshot) => {
+      const collections={};
+      querySnapshot.forEach((doc) => {
+        // console.log(doc.data());
+        // console.log(doc.id, " => ", doc.data());
+          // doc.data() is never undefined for query doc snapshots
+          const {items,title} = doc.data();
+          // console.log(items)
+          const item = {
+            items,
+            title,
+            routeName:encodeURI(title.toLowerCase()),
+            id:doc.id
+          }
+          collections[item.title]=item;
+        });
+        // console.log(collections);
+        return collections
+      });
+
   export const signInWithGoogle = () =>auth.signInWithPopup(provider);
   export default firebase;
 
